@@ -43,8 +43,9 @@ class Deck {
         void clear();
         void add_cards(std::vector<Card> in_cards);
         std::vector<Card> take_cards(int number);
+        std::vector<Card> vieuw_cards(int number);
         void print_deck();
-        int get_poker_score();
+        phevaluator::Rank get_poker_score();
     private:
         std::vector<Card> cards = {};
 
@@ -72,8 +73,8 @@ class Player {
         bool has_highest_bet(int last_bet);
         void take_role_bet(int min_bet, int& bettings);
         void sub_round_reset();
-    private:
         Deck hand;
+    private:
         int chips;
         int already_bet = 0;
 };

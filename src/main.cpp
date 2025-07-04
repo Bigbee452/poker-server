@@ -2,6 +2,7 @@
 #include <iostream>
 #include <random>
 #include <algorithm>
+#include <vector>
 
 Deck::Deck(bool start_full){
     if(start_full){
@@ -50,6 +51,18 @@ std::vector<Card> Deck::take_cards(int number){
     return top_cards;
 }
 
+std::vector<Card> Deck::vieuw_cards(int number){
+    std::vector<Card> top_cards = {};
+    for(int i = 1; i <= number; i++){
+        if(i >= 0){
+            top_cards.push_back(cards[cards.size()-i]);
+        } else {
+            std::cerr << "trying to take cards out of an empty deck" << std::endl;
+        }
+    }
+    return top_cards;
+}
+
 void Deck::add_cards(std::vector<Card> in_cards){
     for(Card card : in_cards){
         cards.push_back(card);
@@ -62,7 +75,7 @@ void Deck::print_deck(){
     }
 }
 
-int Deck::get_poker_score(){
+phevaluator::Rank Deck::get_poker_score(){
     if(cards.size() != 7){
         std::cerr << "wrong number of cards to evaluate hand score!\n expected 7 got " << cards.size() << std::endl;
     }
@@ -77,7 +90,7 @@ int Deck::get_poker_score(){
 
     std::cout << rank.describeRank() << std::endl;
      
-    return rank.value();
+    return rank;
 }
 
 void Deck::sort_rank(){
@@ -223,6 +236,36 @@ void Poker::start_round(){
     flop();
     turn();
     river();
+
+    if(active_players > 1){
+        phevaluator::Rank rank;
+        int prev_rank_value = -1;
+        int winning_player_id = -1;
+        for(Player* player : players){
+            if(!player->folded){
+                Deck check_deck;
+                check_deck.add_cards(community_cards.vieuw_cards(5));
+                check_deck.add_cards(player->hand.vieuw_cards(2));
+                phevaluator::Rank player_rank = check_deck.get_poker_score();
+                if(player_rank.value() < prev_rank_value || prev_rank_value == -1){
+                    rank = player_rank;
+                    prev_rank_value = player_rank.value();
+                    winning_player_id = player->player_num;
+                }
+            }
+        }
+        std::cout << "player" << winning_player_id+1 << " won the game with a " << rank.describeRank() << std::endl;
+    } else if(active_players == 1){
+        int winning_player_id = -1;
+        for(Player* player : players){
+            if(!player->folded){
+                winning_player_id = player->player_num;
+            }
+        }
+        std::cout << "player" << winning_player_id +1 << " won the game because everybody else folded" << std::endl;
+    } else {
+        std::cerr << "nobody won?" << std::endl;
+    }
 }
 
 void Poker::pre_flop(){
@@ -259,7 +302,7 @@ void Poker::pre_flop(){
 
     last_bet = min_bet;
     //let players place their bets till they all agree 
-    while(number_of_bets < active_players){
+    while(number_of_bets < active_players && active_players > 1){
         if(!players[start_index%players.size()]->folded){ //players that folded dont participate
             int player_bet = players[start_index%players.size()]->get_bet(last_bet, bettings);
             if(player_bet > last_bet){
@@ -300,7 +343,7 @@ void Poker::flop(){
         }
 
         //let the player bet
-        while(number_of_bets < active_players){
+        while(number_of_bets < active_players && active_players > 1){
             if(!players[start_index%players.size()]->folded){ //players that folded dont participate
                 int player_bet = players[start_index%players.size()]->get_bet(last_bet, bettings);
                 if(player_bet > last_bet){
@@ -342,7 +385,7 @@ void Poker::turn(){
         }
 
         //let the player bet
-        while(number_of_bets < active_players){
+        while(number_of_bets < active_players && active_players > 1){
             if(!players[start_index%players.size()]->folded){ //players that folded dont participate
                 int player_bet = players[start_index%players.size()]->get_bet(last_bet, bettings);
                 if(player_bet > last_bet){
@@ -366,19 +409,7 @@ void Poker::river(){
 }
 
 int main(){
-    //Poker poker_game;
-    //poker_game.setup();    
-    //poker_game.start_round();
-    Card card1 = {9};
-    Card card2 = {0+26}; 
-    Card card3 = {11};
-    Card card4 = {12+13};
-    Card card5 = {49};
-    Card card6 = {5+13};
-    Card card7 = {7};
-    std::vector<Card> cards = {card1, card2, card3, card4, card5, card6, card7};
-    Deck myDeck;
-    myDeck.add_cards(cards);
-    std::cout << myDeck.get_poker_score() << std::endl;
-    myDeck.print_deck();
+    Poker poker_game;
+    poker_game.setup();    
+    poker_game.start_round();
 }
