@@ -1,0 +1,1 @@
+add_executable(poker "main.cpp" "main.h")
