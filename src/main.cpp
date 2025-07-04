@@ -62,10 +62,22 @@ void Deck::print_deck(){
     }
 }
 
-Score Deck::get_poker_score(){
-    //std::cout << has_flush() << std::endl;
-    Score score;
-    return score;
+int Deck::get_poker_score(){
+    if(cards.size() != 7){
+        std::cerr << "wrong number of cards to evaluate hand score!\n expected 7 got " << cards.size() << std::endl;
+    }
+    phevaluator::Rank rank = phevaluator::EvaluateCards(
+                                                cards[0].card_str_short(), 
+                                                cards[1].card_str_short(), 
+                                                cards[2].card_str_short(), 
+                                                cards[3].card_str_short(), 
+                                                cards[4].card_str_short(), 
+                                                cards[5].card_str_short(), 
+                                                cards[6].card_str_short());
+
+    std::cout << rank.describeRank() << std::endl;
+     
+    return rank.value();
 }
 
 void Deck::sort_rank(){
@@ -358,7 +370,7 @@ int main(){
     //poker_game.setup();    
     //poker_game.start_round();
     Card card1 = {9};
-    Card card2 = {10}; 
+    Card card2 = {0+26}; 
     Card card3 = {11};
     Card card4 = {12+13};
     Card card5 = {49};
@@ -367,6 +379,6 @@ int main(){
     std::vector<Card> cards = {card1, card2, card3, card4, card5, card6, card7};
     Deck myDeck;
     myDeck.add_cards(cards);
-    myDeck.get_poker_score();
+    std::cout << myDeck.get_poker_score() << std::endl;
     myDeck.print_deck();
 }

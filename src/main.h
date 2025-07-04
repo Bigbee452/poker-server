@@ -1,6 +1,7 @@
 #pragma  once
 #include <vector>
 #include <string>
+#include <phevaluator/phevaluator.h>
 
 struct Card {
     int card_id; //spades 0=ace, 2=2, ..., 12=king, Hearts 13=1, ..., Diamonds, Cubs
@@ -25,11 +26,13 @@ struct Card {
         std::string return_string = suit + " " + rank;
         return return_string;
     }
-};
 
-struct Score {
-    int score = 0;
-    int sub_score = 0;
+    std::string card_str_short(){
+        std::string suits[] = {"s", "h", "d", "c"};
+        std::string ranks[] = {"A", "2", "3", "4", "5", "6", "7", "8", "9", "T", "J", "Q", "K"}; 
+        std::string return_string = ranks[rank()]+suits[suit()];
+        return return_string;      
+    }
 };
 
 class Deck {
@@ -41,7 +44,7 @@ class Deck {
         void add_cards(std::vector<Card> in_cards);
         std::vector<Card> take_cards(int number);
         void print_deck();
-        Score get_poker_score();
+        int get_poker_score();
     private:
         std::vector<Card> cards = {};
 
