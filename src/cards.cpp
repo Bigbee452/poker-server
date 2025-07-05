@@ -89,7 +89,6 @@ phevaluator::Rank Deck::get_poker_score(){
                                                 cards[5].card_str_short(), 
                                                 cards[6].card_str_short());
 
-    std::cout << rank.describeRank() << std::endl;
      
     return rank;
 }

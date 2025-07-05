@@ -1,1 +1,1 @@
-add_executable(poker "main.cpp" "main.h" "cards.cpp" "cards.h" "player.cpp" "player.h" "poker.cpp" "poker.h")
+add_executable(poker "main.cpp" "main.h" "cards.cpp" "cards.h" "player.cpp" "player.h" "poker.cpp" "poker.h" "network.cpp" "network.h")

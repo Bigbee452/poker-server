@@ -13,5 +13,16 @@ set(BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 
 add_subdirectory(external/pokerhandevaluator/cpp)
 
+
+include(FetchContent)
+FetchContent_Declare(SFML
+    GIT_REPOSITORY https://github.com/SFML/SFML.git
+    GIT_TAG 3.0.1
+    GIT_SHALLOW ON
+    EXCLUDE_FROM_ALL
+    SYSTEM)
+FetchContent_MakeAvailable(SFML)
+
 add_subdirectory(src)
 target_link_libraries(poker PRIVATE pheval)
+target_link_libraries(poker PRIVATE SFML::Network)
