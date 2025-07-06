@@ -10,6 +10,7 @@ int main(int argc, char* argv[]){
     }
     if(argc > 1 && arg1 == "-c"){
         Client client("127.0.0.1", 9603);
+        client.run();
     } else {
         Server server(9603);
         server.wait_for_players();
