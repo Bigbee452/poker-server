@@ -4,7 +4,6 @@
 
 #include "cards.h"
 
-
 Deck::Deck(bool start_full){
     if(start_full){
         for(int i = 0; i < 52;  i++){
@@ -99,4 +98,8 @@ void Deck::sort_rank(){
 
 void Deck::sort_suit(){
     std::sort(cards.begin(), cards.end(), [](const Card& a, const Card& b){return a.suit() < b.suit();});
+}
+
+int Deck::size(){
+    return cards.size();
 }

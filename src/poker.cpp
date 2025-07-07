@@ -1,4 +1,5 @@
 #include "poker.h"
+#include "player.h"
 #include <iostream>
 #include <string>
 
@@ -13,26 +14,22 @@ void Poker::setup(){
 }
 
 void Poker::get_players(){
-    int chips = 300;
+    //get starting chips
+    int chips = -1;
     for(auto client : server->clients){
         if(client->is_master){
             std::string ask_msg = "enter start chips: ";
             chips = client->ask_int(ask_msg);
-            std::cout << chips << std::endl;
         }
     }
+    if(chips == -1){
+        std::cout << "error getting starting chips setting them to default" << std::endl;
+        chips = 300;
+    }
+    std::cout << "starting with " << chips << " chips" << std::endl;
 
-    /*
-    std::cout << "how many players participate in this game (minimum 2): ";
-    int num_players;
-    std::cin >> num_players;
-    std::cout << "starting game with " << num_players << " players" << std::endl;
-
-    for(int i = 0; i < num_players;  i++){
-        std::cout << "enter player " << i+1 << " chips: ";
-        int chips;
-        std::cin >> chips;
-        Player* player = new Player(chips);
+    for(int i = 0; i < server->clients.size(); i++){
+        Player* player = new Player(chips, server->clients[i]);
         if(i==0){
             player->role = Role::dealer;
         } else if(i==1){
@@ -43,7 +40,7 @@ void Poker::get_players(){
         player->player_num = i;
         players.push_back(player);
     }
-    */
+    std::cout << "generated all players" << std::endl;
 }
 
 void Poker::start_round(){
@@ -93,6 +90,7 @@ void Poker::pre_flop(){
     //deal 2 cards to each player
     for(Player* player : players){
         player->set_hand(deck.take_cards(2));
+        player->network->send_deck(player->hand, "hand");
     }
 
     //bets code

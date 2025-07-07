@@ -68,6 +68,49 @@ int NetworkPlayer::ask_int(std::string& msg_str){
     return atoi(received.c_str());
 }  
 
+void NetworkPlayer::send_deck(Deck& deck, std::string id){
+    send_all(*player_socket, id.c_str(), id.size());
+    std::string msg_in;
+    if(!receive_with_timeout(*player_socket, msg_in, sf::seconds(5))){
+        std::cout << "failed to send deck (id)" << std::endl;
+        return;
+    }
+    std::string expected_response = id+ " ok";
+    if(!(msg_in == expected_response)){
+        std::cout << "failed to send deck didn't receive expected respnse (id)" << std::endl;     
+        return;
+    }
+
+    std::string size_str = std::to_string(deck.size());
+    send_all(*player_socket, size_str.c_str(), size_str.size());
+
+    if(!receive_with_timeout(*player_socket, msg_in, sf::seconds(5))){
+        std::cout << "failed to send deck" << std::endl;
+        return;
+    }
+    if(!(msg_in == expected_response)){
+        std::cout << "failed to send deck didn't receive expected respnse (deck size)" << std::endl;     
+        return;
+    }
+
+    std::vector<Card> cards = deck.vieuw_cards(deck.size());
+    std::string card_str = "";
+    for(Card card : cards){
+        card_str += std::to_string(card.card_id)+",";
+    }
+    card_str.pop_back();
+    send_all(*player_socket, card_str.c_str(), card_str.size());
+
+    if(!receive_with_timeout(*player_socket, msg_in, sf::seconds(5))){
+        std::cout << "failed to send deck" << std::endl;
+        return;
+    }
+    if(!(msg_in == expected_response)){
+        std::cout << "failed to send deck" << std::endl;     
+        return;
+    }
+}
+
 Server::Server(unsigned short port){
     if (listener.listen(port) != sf::Socket::Status::Done) {
         std::cerr << "Error: Could not bind the listener to port " << port << "\n";

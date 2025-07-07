@@ -7,6 +7,7 @@ class Client {
         ~Client();
         void run();
         void return_int();
+        void get_hand();
         bool is_master = false;
         bool disconnected = false;
     private:

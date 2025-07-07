@@ -1,10 +1,14 @@
 #include "client.h"
 #include <SFML/System/Time.hpp>
+#include <cstdlib>
 #include <iostream>
 #include <chrono>
 #include <string>
 #include <thread>
+#include <vector>
+#include <sstream>
 
+#include "cards.h"
 #include "network.h"
 
 Client::Client(const std::string& serverIp, unsigned short port){
@@ -49,6 +53,40 @@ void Client::return_int(){
     send_all(socket, msg_out.c_str(), msg_out.size());
 }
 
+void Client::get_hand(){
+    std::string ok_msg = "hand ok";
+    send_all(socket, ok_msg.c_str(), ok_msg.size());
+    std::string msg_in;
+    if(!receive_with_timeout(socket, msg_in, sf::seconds(5))){
+        std::cout << "get hand failed" << std::endl;
+        return;
+    }
+    int number_of_cards = atoi(msg_in.c_str());
+    std::cout << "number of receiving cards: " << number_of_cards << std::endl;
+    send_all(socket, ok_msg.c_str(), ok_msg.size());
+
+    if(!receive_with_timeout(socket, msg_in, sf::seconds(5))){
+        std::cout << "get hand failed" << std::endl;
+        return;
+    }
+    std::vector<Card> cards;
+    std::string card_str;
+    std::stringstream ss(msg_in);
+
+    while (std::getline(ss, card_str, ',')) {
+        Card card;
+        card.card_id = atoi(card_str.c_str());
+        cards.push_back(card);
+    }
+    Deck deck;
+    deck.add_cards(cards);
+
+    std::cout << "hand cards: " << std::endl;
+    deck.print_deck();
+
+    send_all(socket, ok_msg.c_str(), ok_msg.size());
+}
+
 void Client::run(){
     if(disconnected){
         return;
@@ -74,6 +112,8 @@ void Client::run(){
             msg_in = std::string(buffer, received);
             if(msg_in == "aint"){
                 return_int();
+            } else if(msg_in == "hand"){
+                get_hand();
             }
         } else if (status == sf::Socket::Status::Disconnected) {
             std::cerr << "Disconnected from server.\n";

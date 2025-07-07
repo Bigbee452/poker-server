@@ -16,6 +16,7 @@ int main(int argc, char* argv[]){
         server->wait_for_players();
         Poker poker(server);
         poker.setup();
+        poker.start_round();
         delete server;
     }
 
