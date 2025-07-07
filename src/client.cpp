@@ -87,6 +87,46 @@ void Client::get_hand(){
     send_all(socket, ok_msg.c_str(), ok_msg.size());
 }
 
+void Client::get_bet(){
+    std::string ok_msg = "gbet ok";
+    send_all(socket, ok_msg.c_str(), ok_msg.size());
+    std::string msg_in;
+    if(!receive_with_timeout(socket, msg_in, sf::seconds(5))){
+        std::cout << "get bet failed to get raise option from server" << std::endl;
+        return;
+    }
+    std::string return_str;
+    while(true){
+        int choise;
+        std::cout << "Place bet: " << std::endl;
+        std::cout << "(1) fold" << std::endl;
+        std::cout << "(2) call" << std::endl;
+        if(msg_in == "t"){
+            std::cout << "(3) raise" << std::endl;       
+        }
+        std::cout << "enter choise: ";
+        std::cin >> choise;
+        if(choise == 1){
+            return_str = "1";
+            send_all(socket, return_str.c_str(), return_str.size());
+            return;
+        } else if(choise == 2){
+            return_str = "2";
+            send_all(socket, return_str.c_str(), return_str.size());
+            return;     
+        } else if(choise == 3 && msg_in == "t"){
+            int raise_amount;
+            std::cout << "enter raise amount: ";
+            std::cin >> raise_amount;
+            return_str = std::to_string(raise_amount+3); 
+            send_all(socket, return_str.c_str(), return_str.size());
+            return; 
+        } else {
+            std::cout << "invalid choise try again" << std::endl;
+        }
+    }
+}
+
 void Client::run(){
     if(disconnected){
         return;
@@ -114,6 +154,8 @@ void Client::run(){
                 return_int();
             } else if(msg_in == "hand"){
                 get_hand();
+            } else if(msg_in == "gbet"){
+                get_bet();
             }
         } else if (status == sf::Socket::Status::Disconnected) {
             std::cerr << "Disconnected from server.\n";

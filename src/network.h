@@ -14,6 +14,7 @@ class NetworkPlayer {
         std::unique_ptr<sf::TcpSocket> player_socket;
         int ask_int(std::string& msg_str);
         void send_deck(Deck& deck, std::string id);
+        int get_bet(bool can_raise);
 };
 
 class Server {

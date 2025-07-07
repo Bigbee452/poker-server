@@ -111,6 +111,30 @@ void NetworkPlayer::send_deck(Deck& deck, std::string id){
     }
 }
 
+int NetworkPlayer::get_bet(bool can_raise){
+    std::string id = "gbet";
+    send_all(*player_socket, id.c_str(), id.size());
+    std::string msg_in;
+    if(!receive_with_timeout(*player_socket, msg_in, sf::seconds(5))){
+        std::cout << "failed to get bet" << std::endl;
+        return -1;
+    } 
+    if(msg_in != "gbet ok"){
+        std::cout << "received wrong id confirm message";
+    }
+    std::string can_raise_str = "f";
+    if(can_raise){
+        can_raise_str = "t";
+    }
+    send_all(*player_socket, can_raise_str.c_str(), can_raise_str.size());
+
+    if(!receive_with_timeout(*player_socket, msg_in, sf::seconds(60))){
+        std::cout << "failed to get bet" << std::endl;
+        return -1;
+    } 
+    return atoi(msg_in.c_str());
+}
+
 Server::Server(unsigned short port){
     if (listener.listen(port) != sf::Socket::Status::Done) {
         std::cerr << "Error: Could not bind the listener to port " << port << "\n";

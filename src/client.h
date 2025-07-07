@@ -8,6 +8,7 @@ class Client {
         void run();
         void return_int();
         void get_hand();
+        void get_bet();
         bool is_master = false;
         bool disconnected = false;
     private:
