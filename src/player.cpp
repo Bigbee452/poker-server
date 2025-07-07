@@ -2,8 +2,8 @@
 
 #include "player.h"
 
-Player::Player(int in_chips){
-    chips = in_chips;
+Player::Player(int chips, NetworkPlayer* network) : chips(chips), network(network) {
+    
 }
 
 void Player::set_hand(std::vector<Card> in_hand){

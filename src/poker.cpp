@@ -1,5 +1,6 @@
 #include "poker.h"
 #include <iostream>
+#include <string>
 
 Poker::~Poker(){
     for(Player* player : players){
@@ -12,6 +13,16 @@ void Poker::setup(){
 }
 
 void Poker::get_players(){
+    int chips = 300;
+    for(auto client : server->clients){
+        if(client->is_master){
+            std::string ask_msg = "enter start chips: ";
+            chips = client->ask_int(ask_msg);
+            std::cout << chips << std::endl;
+        }
+    }
+
+    /*
     std::cout << "how many players participate in this game (minimum 2): ";
     int num_players;
     std::cin >> num_players;
@@ -32,6 +43,7 @@ void Poker::get_players(){
         player->player_num = i;
         players.push_back(player);
     }
+    */
 }
 
 void Poker::start_round(){

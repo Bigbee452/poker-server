@@ -6,6 +6,7 @@ class Client {
         Client(const std::string& serverIp, unsigned short port);
         ~Client();
         void run();
+        void return_int();
         bool is_master = false;
         bool disconnected = false;
     private:

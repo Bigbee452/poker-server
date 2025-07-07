@@ -12,8 +12,11 @@ int main(int argc, char* argv[]){
         Client client("127.0.0.1", 9603);
         client.run();
     } else {
-        Server server(9603);
-        server.wait_for_players();
+        Server* server = new Server(9603);
+        server->wait_for_players();
+        Poker poker(server);
+        poker.setup();
+        delete server;
     }
 
     /*

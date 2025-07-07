@@ -5,6 +5,8 @@
 #include <string>
 #include <thread>
 
+#include "network.h"
+
 Client::Client(const std::string& serverIp, unsigned short port){
     std::cout << "Connecting to server " << serverIp << ":" << port << "...\n";
     sf::IpAddress ip = sf::IpAddress::resolve(serverIp).value();
@@ -33,22 +35,50 @@ Client::~Client(){
     socket.disconnect();
 }
 
+void Client::return_int(){
+    std::string ok_msg = "aint ok";
+    send_all(socket, ok_msg.c_str(), ok_msg.size());
+    std::string msg_in;
+    int my_int = -2;
+    if(receive_with_timeout(socket, msg_in, sf::seconds(5))){
+        std::cout << msg_in;
+        std::cin.clear();
+        std::cin >> my_int;
+    }
+    std::string msg_out = std::to_string(my_int);
+    send_all(socket, msg_out.c_str(), msg_out.size());
+}
+
 void Client::run(){
     if(disconnected){
         return;
     }
     if(is_master){
-        std::string tempStr;
-        std::cout << "press enter to start the game";
-        std::cin >> tempStr;
+        int chips;
+        std::cout << "enter 1 to start the game: ";
+        std::cin >> chips;
         std::string start_msg = "start";
         sf::Socket::Status sendStatus = socket.send(start_msg.c_str(), start_msg.size());
         if (sendStatus != sf::Socket::Status::Done) {
             std::cerr << "Warning: Failed to send data to client.\n";
         }
     }
+    
     while(true){
-
+        char buffer[1024];
+        std::size_t received;
+        socket.setBlocking(false); 
+        std::string msg_in;
+        sf::Socket::Status status = socket.receive(buffer, sizeof(buffer), received);
+        if (status == sf::Socket::Status::Done) {
+            msg_in = std::string(buffer, received);
+            if(msg_in == "aint"){
+                return_int();
+            }
+        } else if (status == sf::Socket::Status::Disconnected) {
+            std::cerr << "Disconnected from server.\n";
+            return;
+        }
     }
 }
 

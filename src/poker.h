@@ -1,14 +1,18 @@
 #pragma once
 #include "cards.h"
 #include "player.h"
+#include "network.h"
+#include <vector>
 
 class Poker {
     public:
         int min_bet = 10;
         void setup();
         void start_round();
+        Poker(Server* server) : server(server) {};
         ~Poker();
     private:
+        Server* server;
         std::vector<Player*> players;
         int bettings = 0;
         Deck community_cards = {};
