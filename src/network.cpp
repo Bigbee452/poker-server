@@ -162,6 +162,33 @@ void NetworkPlayer::send_last_bet(int last_bet){
     }
 }
 
+void NetworkPlayer::send_chips(int chips){
+    std::string id = "chips";
+    send_all(*player_socket, id.c_str(), id.size());
+
+    std::string msg_in;
+    if(!receive_with_timeout(*player_socket, msg_in, sf::seconds(60))){
+        std::cout << "failed to send chips" << std::endl;
+        return;
+    } 
+    if(msg_in != "chips ok"){
+        std::cout << "received wrong chips confirm message" << std::endl;
+        return;
+    }
+
+    std::string chips_str = std::to_string(chips);
+    send_all(*player_socket, chips_str.c_str(), chips_str.size());
+
+    if(!receive_with_timeout(*player_socket, msg_in, sf::seconds(60))){
+        std::cout << "failed to send chips" << std::endl;
+        return;
+    } 
+    if(msg_in != "chips ok"){
+        std::cout << "received wrong chips confirm message" << std::endl;
+        return;
+    }
+}
+
 Server::Server(unsigned short port){
     if (listener.listen(port) != sf::Socket::Status::Done) {
         std::cerr << "Error: Could not bind the listener to port " << port << "\n";

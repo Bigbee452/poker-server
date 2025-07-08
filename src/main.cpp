@@ -2,6 +2,7 @@
 #include "poker.h"
 #include "network.h"
 #include "client.h"
+#include <iostream>
 
 int main(int argc, char* argv[]){
     std::string arg1 = "";
@@ -9,7 +10,10 @@ int main(int argc, char* argv[]){
         arg1 = argv[1];
     }
     if(argc > 1 && arg1 == "-c"){
-        Client client("127.0.0.1", 9603);
+        std::string ip;
+        std::cout << "enter server ip";
+        std::cin >> ip;
+        Client client(ip, 9603);
         client.run();
     } else {
         Server* server = new Server(9603);

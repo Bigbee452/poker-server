@@ -16,6 +16,7 @@ class NetworkPlayer {
         void send_deck(Deck& deck, std::string id);
         int get_bet(bool can_raise);
         void send_last_bet(int last_bet);
+        void send_chips(int chips);
 };
 
 class Server {

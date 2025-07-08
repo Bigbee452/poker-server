@@ -156,6 +156,20 @@ void Client::get_last_bet(){
     std::cout << "last bet: " << atoi(msg_in.c_str()) << std::endl;
 }
 
+void Client::get_chips(){
+    std::string ok_msg = "chips ok";
+    send_all(socket, ok_msg.c_str(), ok_msg.size());
+
+    std::string msg_in;
+    if(!receive_with_timeout(socket, msg_in, sf::seconds(5))){
+        std::cout << "get bet failed to chips from server" << std::endl;
+        return;
+    }    
+
+    std::cout << "chips: " << msg_in << std::endl;
+    send_all(socket, ok_msg.c_str(), ok_msg.size());
+}
+
 void Client::run(){
     if(disconnected){
         return;
@@ -189,6 +203,8 @@ void Client::run(){
                 get_last_bet();
             } else if(msg_in == "comcards"){
                 get_community_cards();
+            } else if(msg_in == "chips"){
+                get_chips();
             }
         } else if (status == sf::Socket::Status::Disconnected) {
             std::cerr << "Disconnected from server.\n";

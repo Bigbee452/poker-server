@@ -13,6 +13,7 @@ class Client {
         void get_community_cards();
         void get_bet();
         void get_last_bet();
+        void get_chips();
         bool is_master = false;
         bool disconnected = false;
     private:
