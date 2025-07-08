@@ -80,7 +80,7 @@ void NetworkPlayer::send_deck(Deck& deck, std::string id){
         std::cout << "failed to send deck didn't receive expected respnse (id)" << std::endl;     
         return;
     }
-
+    expected_response = "cards ok";
     std::string size_str = std::to_string(deck.size());
     send_all(*player_socket, size_str.c_str(), size_str.size());
 
@@ -133,6 +133,33 @@ int NetworkPlayer::get_bet(bool can_raise){
         return -1;
     } 
     return atoi(msg_in.c_str());
+}
+
+void NetworkPlayer::send_last_bet(int last_bet){
+    std::string id = "lastbet";
+    send_all(*player_socket, id.c_str(), id.size());
+
+    std::string msg_in;
+    if(!receive_with_timeout(*player_socket, msg_in, sf::seconds(60))){
+        std::cout << "failed to send last bet" << std::endl;
+        return;
+    } 
+    if(msg_in != "lastbet ok"){
+        std::cout << "received wrong id confirm message" << std::endl;
+        return;
+    }
+
+    std::string last_bet_str = std::to_string(last_bet);
+    send_all(*player_socket, last_bet_str.c_str(), last_bet_str.size());
+
+    if(!receive_with_timeout(*player_socket, msg_in, sf::seconds(60))){
+        std::cout << "failed to send last bet" << std::endl;
+        return;
+    } 
+    if(msg_in != "lastbet ok"){
+        std::cout << "received wrong last bet confirm message" << std::endl;
+        return;
+    }
 }
 
 Server::Server(unsigned short port){

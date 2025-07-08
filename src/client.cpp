@@ -53,13 +53,14 @@ void Client::return_int(){
     send_all(socket, msg_out.c_str(), msg_out.size());
 }
 
-void Client::get_hand(){
-    std::string ok_msg = "hand ok";
-    send_all(socket, ok_msg.c_str(), ok_msg.size());
+Deck Client::get_cards(){
+    std::vector<Card> cards = {};
+    std::string ok_msg = "cards ok";
     std::string msg_in;
+    Deck deck;
     if(!receive_with_timeout(socket, msg_in, sf::seconds(5))){
-        std::cout << "get hand failed" << std::endl;
-        return;
+        std::cout << "get hand failed to receive deck size" << std::endl;
+        return deck;
     }
     int number_of_cards = atoi(msg_in.c_str());
     std::cout << "number of receiving cards: " << number_of_cards << std::endl;
@@ -67,9 +68,8 @@ void Client::get_hand(){
 
     if(!receive_with_timeout(socket, msg_in, sf::seconds(5))){
         std::cout << "get hand failed" << std::endl;
-        return;
+        return deck;
     }
-    std::vector<Card> cards;
     std::string card_str;
     std::stringstream ss(msg_in);
 
@@ -78,13 +78,27 @@ void Client::get_hand(){
         card.card_id = atoi(card_str.c_str());
         cards.push_back(card);
     }
-    Deck deck;
     deck.add_cards(cards);
+    send_all(socket, ok_msg.c_str(), ok_msg.size());
+    return deck;
+}
 
+void Client::get_hand(){
+    std::string ok_msg = "hand ok";
+    send_all(socket, ok_msg.c_str(), ok_msg.size());
+        
+    Deck deck = get_cards();
     std::cout << "hand cards: " << std::endl;
     deck.print_deck();
+}
 
+void Client::get_community_cards(){
+    std::string ok_msg = "comcards ok";
     send_all(socket, ok_msg.c_str(), ok_msg.size());
+        
+    Deck deck = get_cards();
+    std::cout << "community cards: " << std::endl;
+    deck.print_deck();
 }
 
 void Client::get_bet(){
@@ -127,6 +141,21 @@ void Client::get_bet(){
     }
 }
 
+void Client::get_last_bet(){
+    std::string ok_msg = "lastbet ok";
+    send_all(socket, ok_msg.c_str(), ok_msg.size());
+
+    std::string msg_in;
+    if(!receive_with_timeout(socket, msg_in, sf::seconds(5))){
+        std::cout << "get bet failed to get raise option from server" << std::endl;
+        return;
+    }
+
+    send_all(socket, ok_msg.c_str(), ok_msg.size());
+    
+    std::cout << "last bet: " << atoi(msg_in.c_str()) << std::endl;
+}
+
 void Client::run(){
     if(disconnected){
         return;
@@ -156,6 +185,10 @@ void Client::run(){
                 get_hand();
             } else if(msg_in == "gbet"){
                 get_bet();
+            } else if(msg_in == "lastbet"){
+                get_last_bet();
+            } else if(msg_in == "comcards"){
+                get_community_cards();
             }
         } else if (status == sf::Socket::Status::Disconnected) {
             std::cerr << "Disconnected from server.\n";

@@ -1,4 +1,5 @@
 #pragma once
+#include "cards.h"
 #include <SFML/Network.hpp>
 
 class Client {
@@ -7,8 +8,11 @@ class Client {
         ~Client();
         void run();
         void return_int();
+        Deck get_cards();
         void get_hand();
+        void get_community_cards();
         void get_bet();
+        void get_last_bet();
         bool is_master = false;
         bool disconnected = false;
     private:

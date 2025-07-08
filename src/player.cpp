@@ -40,6 +40,7 @@ void Player::take_role_bet(int min_bet, int& bettings){
 
 int Player::get_bet(int last_bet, int& bettings){
     bool can_raise = chips > last_bet;
+    network->send_last_bet(last_bet);
     int choice = network->get_bet(can_raise);
     if(choice == 1){
         folded = true;

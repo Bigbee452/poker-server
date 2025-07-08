@@ -145,6 +145,9 @@ void Poker::flop(){
         community_cards.add_cards(deck.take_cards(3));
         std::cout << "comunity cards: " << std::endl;
         community_cards.print_deck();
+        for(auto player : players){
+            player->network->send_deck(community_cards, "comcards");
+        }
 
         //reset players, last bet and number of bets
         for(Player* player : players){
@@ -187,6 +190,9 @@ void Poker::turn(){
         community_cards.add_cards(deck.take_cards(1));
         std::cout << "comunity cards: " << std::endl;
         community_cards.print_deck();
+        for(auto player : players){
+            player->network->send_deck(community_cards, "comcards");
+        }
 
         //reset players, last bet and number of bets
         for(Player* player : players){
