@@ -1,9 +1,10 @@
 #include <iostream>
 
 #include "player.h"
+#include "network.h"
 
-Player::Player(int in_chips){
-    chips = in_chips;
+Player::Player(int chips, NetworkPlayer* network) : chips(chips), network(network) {
+    
 }
 
 void Player::set_hand(std::vector<Card> in_hand){
@@ -38,6 +39,53 @@ void Player::take_role_bet(int min_bet, int& bettings){
 }
 
 int Player::get_bet(int last_bet, int& bettings){
+    bool can_raise = chips > last_bet;
+    network->send_chips(chips);
+    network->send_last_bet(last_bet);
+    int choice = network->get_bet(can_raise);
+    if(choice == 1){
+        folded = true;
+        return -1;
+    } else if(choice == 2){
+        if(chips < last_bet-already_bet){
+            int bet = chips;
+            already_bet += chips;
+            bettings += chips;
+            chips = 0;
+            return bet;
+        } else {
+            chips -= last_bet-already_bet;
+            bettings += last_bet-already_bet;
+            already_bet = last_bet;
+            return last_bet;
+        }
+    } else if(choice > 2){
+        if(chips <= last_bet){
+            int bet = chips;
+            already_bet += chips;
+            bettings += chips;
+            chips = 0;
+            return bet;
+        }
+        int raise = choice-3;
+        if(chips < last_bet+raise-already_bet){
+            already_bet += chips;
+            bettings += chips;
+            int bet = chips;
+            chips = 0;
+            return bet;
+        } else {
+            bettings += last_bet+raise-already_bet;
+            chips -= last_bet+raise-already_bet;
+            already_bet = last_bet+raise;
+            return last_bet+raise;
+        }
+    } else {
+        std::cout << "invallid betting choise, folding player" << std::endl;
+        folded = true;
+        return -1;
+    }
+    /*
     std::cout << "Player " << player_num+1 << " chips: " << chips << " last bet: " << last_bet << std::endl;
     std::cout << "(1) fold" << std::endl;
     std::cout << "(2) call" << std::endl;
@@ -87,6 +135,7 @@ int Player::get_bet(int last_bet, int& bettings){
             std::cin.ignore(10000, '\n');
         }
     }
+    */
 }
 
 void Player::sub_round_reset(){

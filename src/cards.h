@@ -46,6 +46,7 @@ class Deck {
         std::vector<Card> vieuw_cards(int number);
         void print_deck();
         phevaluator::Rank get_poker_score();
+        int size();
     private:
         std::vector<Card> cards = {};
 
