@@ -11,7 +11,7 @@ int main(int argc, char* argv[]){
     }
     if(argc > 1 && arg1 == "-c"){
         std::string ip;
-        std::cout << "enter server ip";
+        std::cout << "enter server ip: ";
         std::cin >> ip;
         Client client(ip, 9603);
         client.run();
@@ -23,10 +23,4 @@ int main(int argc, char* argv[]){
         poker.start_round();
         delete server;
     }
-
-    /*
-    Poker poker_game;
-    poker_game.setup();    
-    poker_game.start_round();
-    */
 }
