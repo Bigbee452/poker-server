@@ -23,7 +23,7 @@ Client::Client(const std::string& serverIp, unsigned short port){
     std::string message;
     if(receiveWithTimeout(socket, message, sf::seconds(5))){
         std::cout << "received identifier: " << message << std::endl;
-        if(message == "master"){
+        if(message == "id master"){
             is_master = true;
         } else {
             is_master = false;

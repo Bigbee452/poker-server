@@ -216,7 +216,7 @@ void Server::wait_for_players(){
                     selector.add(*client);
                     new_player->player_socket = std::move(client);
 
-                    std::string message = "";
+                    std::string message = "id ";
                     if(clients.empty()){
                         new_player->is_master = true;
                         message += "master";
