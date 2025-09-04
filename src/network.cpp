@@ -247,6 +247,12 @@ void Server::wait_for_players(){
                         std::string msg(buffer, received);
                         std::cout << "Received: " << msg << "\n";
                         if((*it)->is_master && msg == "start"){
+                            for(auto client : clients){
+                                if(!client->is_master){
+                                    std::string startId = "start";
+                                    send_all(*client->player_socket, startId.c_str(), startId.size());
+                                }
+                            }
                             return;
                         }
                     } else if (status == sf::Socket::Status::Disconnected) {
