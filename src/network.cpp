@@ -49,6 +49,27 @@ bool receive_with_timeout(sf::TcpSocket& socket, std::string& outMessage, sf::Ti
     }
 }
 
+void NetworkPlayer::sendMessage(std::string &msg_str){
+    if(!send_all(*player_socket, msg_str.c_str(), msg_str.size())){
+        std::cout << "failed to send " << msg_str << " to client!" << std::endl;
+        return;
+    }
+}
+
+bool NetworkPlayer::tryReceive(std::string &out){
+    char buffer[1024];
+    std::size_t received;
+    sf::Socket::Status status = player_socket->receive(buffer, sizeof(buffer), received);
+    if (status == sf::Socket::Status::Done) {
+        out = std::string(buffer, received);
+        return true; // Successfully received
+    } else if (status == sf::Socket::Status::Disconnected) {
+        std::cerr << "Client disconnected from server.\n";
+        return false;
+    }
+    return false;
+}
+
 int NetworkPlayer::ask_int(std::string& msg_str){
     std::string id = "aint";
     if(!send_all(*player_socket, id.c_str(), id.size())){

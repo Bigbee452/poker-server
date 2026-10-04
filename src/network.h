@@ -17,6 +17,8 @@ class NetworkPlayer {
         int get_bet(bool can_raise);
         void send_last_bet(int last_bet);
         void send_chips(int chips);
+        void sendMessage(std::string& msg_str);
+        bool tryReceive(std::string& out);
 };
 
 class Server {

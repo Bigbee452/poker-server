@@ -2,9 +2,15 @@
 #include "poker.h"
 #include "network.h"
 #include "client.h"
+#include "pokerStateMachine.h"
 #include <iostream>
 
 int main(int argc, char* argv[]){
+    PokerServerStateMachine server(9603);
+    while(true){
+        server.update();
+    }
+    /*
     std::string arg1 = "";
     if(argc > 1){
         arg1 = argv[1];
@@ -23,4 +29,5 @@ int main(int argc, char* argv[]){
         poker.start_round();
         delete server;
     }
+    */
 }
