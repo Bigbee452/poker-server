@@ -87,12 +87,6 @@ void Poker::start_round(){
 }
 
 void Poker::pre_flop(){
-    //deal 2 cards to each player
-    for(Player* player : players){
-        player->set_hand(deck.take_cards(2));
-        player->network->send_deck(player->hand, "hand");
-    }
-
     //bets code
     number_of_bets = 0;
     //find index of first one to bet

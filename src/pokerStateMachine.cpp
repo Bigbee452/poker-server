@@ -28,6 +28,9 @@ void PokerServerStateMachine::update(){
         case PokerServerState::GetStartChips:
             getStartChips();
             break;
+        case PokerServerState::DealHandCards:
+            DealHandCards();
+            break;
     }
 }
 
@@ -154,4 +157,12 @@ void PokerServerStateMachine::setupRound(unsigned int startChips){
     deck = new_deck;
     deck.shuffle();
     active_players = players.size();
+}
+
+void PokerServerStateMachine::initDealHandCards(){
+    //deal 2 cards to each player
+    for(Player* player : players){
+        player->set_hand(deck.take_cards(2));
+        player->network->send_deck(player->hand, "hand");
+    }
 }

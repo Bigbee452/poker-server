@@ -9,6 +9,7 @@
 enum class PokerServerState {
     WaitingForPlayers,
     GetStartChips,
+    DealHandCards,
 };
 
 enum class PokerGameState {
@@ -32,6 +33,9 @@ class PokerServerStateMachine {
         void getStartChips();
 
         void setupRound(unsigned int startChips); //always called from getStartChips
+
+        void initDealHandCards();
+        void DealHandCards();
 
         sf::TcpListener listener;
         sf::SocketSelector selector;
